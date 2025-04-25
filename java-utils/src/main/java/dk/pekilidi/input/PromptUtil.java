@@ -1,5 +1,6 @@
 package dk.pekilidi.input;
 
+import dk.pekilidi.jasypt.Secrets;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
@@ -37,7 +38,7 @@ public class PromptUtil {
             String result = null;
             if (isPassword) {
                 // readPassword() does not display characters
-                result = new String(console.readPassword());
+                result = "ENC(%s)".formatted(Secrets.encrypt(new String(console.readPassword())));
             } else {
                 // Normal reading (visible input)
                 result = console.readLine();

@@ -5,6 +5,8 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Logger;
 import com.jcraft.jsch.Session;
 import dk.pekilidi.exceptions.CannotReadPropertiesException;
+import dk.pekilidi.exceptions.ConfigurationErrorException;
+import dk.pekilidi.jasypt.Secrets;
 import dk.pekilidi.properties.PropertyUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -66,7 +68,7 @@ public class SshTunnelManager {
         session.setConfig("PubkeyAcceptedAlgorithms", "rsa-sha2-256,rsa-sha2-512,ssh-rsa");
 
         // If using private key:
-        jsch.addIdentity(sshKeyPath,sshKeyPassphrase);
+        jsch.addIdentity(sshKeyPath, sshKeyPassphrase);
 
         // Recommended: properly manage known_hosts, host key checking, etc.
         Properties config = new Properties();
@@ -95,7 +97,15 @@ public class SshTunnelManager {
         remoteHost = tunnelProperties.getProperty("ssh.remote.host");
         remotePort = Integer.parseInt(tunnelProperties.getProperty("ssh.remote.port"));
         sshKeyPath = tunnelProperties.getProperty("ssh.private.key.path");
+        if(sshKeyPath == null || sshKeyPath.isEmpty()) {
+            throw new CannotReadPropertiesException("SSH private key path is not set");
+        }
         sshKeyPassphrase = tunnelProperties.getProperty("ssh.private.key.passphrase");
+        if(!sshKeyPassphrase.startsWith("ENC(")) {
+            throw new ConfigurationErrorException("The SSH private key passphrase must be encrypted with Jasypt");
+        } else {
+            sshKeyPassphrase = Secrets.decrypt(sshKeyPassphrase.replaceFirst("^ENC\\((.*)\\)$", "$1"));
+        }
         debug = Boolean.parseBoolean(tunnelProperties.getProperty("debug", "false"));
     }
 

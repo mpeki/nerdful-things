@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
+import org.junitpioneer.jupiter.SetEnvironmentVariable;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,16 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
  * and cannot reinitialize the encryptor between tests.
  */
 @TestMethodOrder(OrderAnnotation.class)
+@SetEnvironmentVariable(key = "JASYPT_ENCRYPTOR_PASSWORD", value = "testMasterPassword")
 class SecretsTest {
 
-    private static final String TEST_MASTER_PASSWORD = "testMasterPassword";
     private static final String TEST_VALUE = "sensitiveInformation";
 
     @BeforeAll
     static void setUp() {
-        // Initialize the Secrets class with a test master password
-        // This will be done only once for all tests
-        Secrets.init(TEST_MASTER_PASSWORD);
     }
 
     @Test
