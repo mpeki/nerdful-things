@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Inbound Exchange
+
+autonumber
+
+"VIR222222" -x "F&P": Cancellation Request
+"F&P" --> VIR222222: Acknowledgement
+
+"F&P" -> "CO+": Query Request
+"CO+" --> "F&P": Acknowledgement
+
+"CO+" -> VIR121212: Query Request
+VIR121212 --> "CO+": HTTP 200 OK
+
+
+@enduml
+
