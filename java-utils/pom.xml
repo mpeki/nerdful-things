@@ -147,9 +147,13 @@
     </build>
     <distributionManagement>
         <repository>
+            <id>libs-release-local</id>
+            <url>https://artifactory.process-factory.dk:443/artifactory/libs-release-local/</url>
+        </repository>
+        <snapshotRepository>
             <id>libs-snapshot-local</id>
             <url>https://artifactory.process-factory.dk:443/artifactory/libs-snapshot-local/</url>
-        </repository>
+        </snapshotRepository>
     </distributionManagement>
 
 </project>
