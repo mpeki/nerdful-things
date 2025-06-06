@@ -145,5 +145,11 @@
             </resource>
         </resources>
     </build>
+    <distributionManagement>
+        <repository>
+            <id>libs-snapshot-local</id>
+            <url>https://artifactory.process-factory.dk:443/artifactory/libs-snapshot-local/</url>
+        </repository>
+    </distributionManagement>
 
 </project>

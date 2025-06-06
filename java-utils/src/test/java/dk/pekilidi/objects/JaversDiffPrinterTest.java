@@ -68,7 +68,7 @@ class JaversDiffPrinterTest {
         // Print the diff
         JaversDiffPrinter.printSimpleChanges(diff);
 
-        // Verify output contains expected list change
+        // Verify that output contains expected list change
         String output = outContent.toString();
         assertTrue(output.contains("=== Simple JaVers Diff Summary ==="));
         assertTrue(output.contains("List change at: items"));
@@ -87,7 +87,7 @@ class JaversDiffPrinterTest {
         // Print the diff
         JaversDiffPrinter.printSimpleChanges(diff);
 
-        // Verify output contains expected set change
+        // Verify that output contains expected set change
         String output = outContent.toString();
         assertTrue(output.contains("=== Simple JaVers Diff Summary ==="));
         assertTrue(output.contains("Set change at: items"));

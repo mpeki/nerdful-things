@@ -22,38 +22,30 @@ import java.util.Properties;
 public class DatabaseManager {
 
     private final Map<String, SessionFactory> sessionFactories = new java.util.HashMap<>();
-    private final List<File> dbPpropertiesList;
     private final File sshPropertiesFile;
 
-    public DatabaseManager(File sshPropertiesFile, List<File> dbPropertyFiles, List<Class<? extends NamedNativeQueryEntity>> queries) {
-        this.dbPpropertiesList = dbPropertyFiles;
+    public DatabaseManager(File sshPropertiesFile, List<Properties> dbProperties, List<Class<? extends NamedNativeQueryEntity>> queries) {
         this.sshPropertiesFile = sshPropertiesFile;
-        dbPpropertiesList.forEach(dbProperties ->
-                sessionFactories.put(dbProperties.getName().replaceFirst("[.][^.]+$", ""), buildSessionFactory(dbProperties, queries)));
+        dbProperties.forEach(dbProps ->
+                sessionFactories.put(dbProps.getProperty("database.name"), buildSessionFactory(dbProps, queries)));
     }
 
 
 
-    public DatabaseManager(List<File> dbPropertyFiles, List<Class<? extends NamedNativeQueryEntity>> queries) {
+    public DatabaseManager(List<Properties> dbPropertyFiles, List<Class<? extends NamedNativeQueryEntity>> queries) {
         this(null, dbPropertyFiles, queries);
     }
 
 
 
-    private SessionFactory buildSessionFactory(File dbProperties, List<Class<? extends NamedNativeQueryEntity>> queries) {
-        Properties dbProps = null;
-        try {
-            dbProps = PropertyUtil.loadFromFile(dbProperties);
-        } catch (IOException e) {
-            throw new CannotReadPropertiesException(e);
-        }
+    private SessionFactory buildSessionFactory(Properties dbProperties, List<Class<? extends NamedNativeQueryEntity>> queries) {
 
-        String dbDriver = dbProps.getProperty("db.driver", "org.postgresql.Driver");
-        String dbHost = dbProps.getProperty("db.host", "localhost");
-        String dbPort = dbProps.getProperty("db.port", "5432");
-        String dbName = dbProps.getProperty("db.name", "");
-        String dbUser = dbProps.getProperty("db.user", "");
-        String dbPass = dbProps.getProperty("db.password", "");
+        String dbDriver = dbProperties.getProperty("db.driver", "org.postgresql.Driver");
+        String dbHost = dbProperties.getProperty("db.host", "localhost");
+        String dbPort = dbProperties.getProperty("db.port", "5432");
+        String dbName = dbProperties.getProperty("db.name", "");
+        String dbUser = dbProperties.getProperty("db.user", "");
+        String dbPass = dbProperties.getProperty("db.password", "");
 
         // If you have a single DB that needs tunneling, you can do it inline:
         if(sshPropertiesFile != null) {
@@ -74,7 +66,7 @@ public class DatabaseManager {
         String jdbcUrl = "jdbc:postgresql://" + dbHost + ":" + dbPort + "/" + dbName;
 
         Properties hibProps = new Properties();
-        hibProps.putAll(dbProps);
+        hibProps.putAll(dbProperties);
 
         hibProps.setProperty("hibernate.connection.driver_class", dbDriver);
         hibProps.setProperty("hibernate.connection.url", jdbcUrl);
@@ -109,7 +101,7 @@ public class DatabaseManager {
         try {
             Transaction tx = session.beginTransaction();
 
-            // The type of the query is T here, preserving the more specific type.
+            // The type of the query is <T> here, preserving the more specific type.
             Query<T> nativeQuery = session.createNamedQuery(queryName, namedQueryEntityClass);
 
             if (!queryParams.isEmpty()) {
