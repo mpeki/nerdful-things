@@ -32,7 +32,13 @@
         <dependency>
             <groupId>net.sourceforge.plantuml</groupId>
             <artifactId>plantuml</artifactId>
-            <version>1.2025.2</version> <!-- Use latest version -->
+            <version>1.2023.9</version> <!-- Use latest version -->
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Your JDBC driver - for example, PostgreSQL -->
@@ -147,6 +153,15 @@
     </build>
     <distributionManagement>
         <repository>
+            <id>plugins-release-local</id>
+            <url>https://artifactory.process-factory.dk:443/artifactory/plugins-release-local/</url>
+        </repository>
+        <snapshotRepository>
+            <id>plugins-snapshot-local</id>
+            <url>https://artifactory.process-factory.dk:443/artifactory/plugins-snapshot-local/</url>
+        </snapshotRepository>
+<!--
+        <repository>
             <id>libs-release-local</id>
             <url>https://artifactory.process-factory.dk:443/artifactory/libs-release-local/</url>
         </repository>
@@ -154,6 +169,7 @@
             <id>libs-snapshot-local</id>
             <url>https://artifactory.process-factory.dk:443/artifactory/libs-snapshot-local/</url>
         </snapshotRepository>
+-->
     </distributionManagement>
 
 </project>

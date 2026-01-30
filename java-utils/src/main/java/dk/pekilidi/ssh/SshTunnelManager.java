@@ -76,9 +76,13 @@ public class SshTunnelManager {
         config.put("PreferredAuthentications", "publickey");
         session.setConfig(config);
 
-        session.connect();
+		log.info("SSH tunnel: connecting {}@{}:{}", sshUser, sshHost, sshPort);
+		session.connect();
+		log.info("SSH tunnel: connected");
 
         forwardedPort = session.setPortForwardingL(localPort, remoteHost, remotePort);
+		log.info("SSH tunnel: local {} -> {}:{} (forwardedPort={})",
+				localPort, remoteHost, remotePort, forwardedPort);
         connected = true;
     }
 
@@ -89,25 +93,41 @@ public class SshTunnelManager {
         connected = false;
     }
 
-    private void configure() {
-        sshHost = tunnelProperties.getProperty("ssh.host");
-        sshPort = Integer.parseInt(tunnelProperties.getProperty("ssh.port"));
-        sshUser = tunnelProperties.getProperty("ssh.user");
-        localPort = Integer.parseInt(tunnelProperties.getProperty("ssh.local.port"));
-        remoteHost = tunnelProperties.getProperty("ssh.remote.host");
-        remotePort = Integer.parseInt(tunnelProperties.getProperty("ssh.remote.port"));
-        sshKeyPath = tunnelProperties.getProperty("ssh.private.key.path");
-        if(sshKeyPath == null || sshKeyPath.isEmpty()) {
-            throw new CannotReadPropertiesException("SSH private key path is not set");
-        }
-        sshKeyPassphrase = tunnelProperties.getProperty("ssh.private.key.passphrase");
-        if(!sshKeyPassphrase.startsWith("ENC(")) {
-            throw new ConfigurationErrorException("The SSH private key passphrase must be encrypted with Jasypt");
-        } else {
-            sshKeyPassphrase = Secrets.decrypt(sshKeyPassphrase.replaceFirst("^ENC\\((.*)\\)$", "$1"));
-        }
-        debug = Boolean.parseBoolean(tunnelProperties.getProperty("debug", "false"));
-    }
+	private void configure() {
+		sshHost = requireProperty("ssh.host");
+		sshPort = requireIntProperty("ssh.port");
+		sshUser = requireProperty("ssh.user");
+		localPort = requireIntProperty("ssh.local.port");
+		remoteHost = requireProperty("ssh.remote.host");
+		remotePort = requireIntProperty("ssh.remote.port");
+
+		sshKeyPath = requireProperty("ssh.private.key.path");
+
+		sshKeyPassphrase = requireProperty("ssh.private.key.passphrase");
+		if (!sshKeyPassphrase.startsWith("ENC(")) {
+			throw new ConfigurationErrorException("Property `ssh.private.key.passphrase` must be encrypted with Jasypt (ENC\\(\\) format)");
+		}
+		sshKeyPassphrase = Secrets.decrypt(sshKeyPassphrase.replaceFirst("^ENC\\((.*)\\)$", "$1"));
+
+		debug = Boolean.parseBoolean(tunnelProperties.getProperty("debug", "false"));
+	}
+
+	private String requireProperty(String key) {
+		String value = tunnelProperties.getProperty(key);
+		if (value == null || value.isBlank()) {
+			throw new CannotReadPropertiesException("Missing or empty required property `" + key + "`");
+		}
+		return value;
+	}
+
+	private int requireIntProperty(String key) {
+		String value = requireProperty(key);
+		try {
+			return Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+			throw new ConfigurationErrorException("Invalid integer for property `" + key + "`: " + value, e);
+		}
+	}
 
     Logger customLogger = new Logger() {
         @Override
