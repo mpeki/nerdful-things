@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/mpeki/nerdful-things/compare/v1.0.0...v1.0.1) (2026-01-30)
+
+
+### Bug Fixes
+
+* making tunnel manager configuration more robust ([d1abdd0](https://github.com/mpeki/nerdful-things/commit/d1abdd0871077804470324e8d99bbe30cd8228ee))
+
 # 1.0.0 (2025-06-06)
 
 
