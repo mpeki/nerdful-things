@@ -96,6 +96,11 @@
             <version>2.14.0</version>   <!-- use the latest 2.x; 2.15.0 is current as of Apr 2025 -->
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.passay</groupId>
+            <artifactId>passay</artifactId>
+            <version>1.6.6</version>
+        </dependency>
     </dependencies>
 
     <build>
