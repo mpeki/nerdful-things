@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/mpeki/nerdful-things/compare/v1.0.1...v1.1.0) (2026-02-03)
+
+
+### Features
+
+* added method for generating a random password ([28f243b](https://github.com/mpeki/nerdful-things/commit/28f243b895c6e8c7b372c10399527df38c8c9abd))
+
 ## [1.0.1](https://github.com/mpeki/nerdful-things/compare/v1.0.0...v1.0.1) (2026-01-30)
 
 
